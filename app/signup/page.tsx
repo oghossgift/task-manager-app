@@ -41,7 +41,7 @@ export default function SignUpPage() {
                 onSubmit={(e) => {
                   e.preventDefault();
                   // UI-only for now
-                  window.location.href = "/login";
+                  window.location.href = "/dashboard";
                 }}
               >
                 <div>

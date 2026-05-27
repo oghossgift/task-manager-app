@@ -47,11 +47,6 @@ export default function DashboardShell({
 
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement | null>(null);
-  const excludedRoutes = [
-    "/dashboard/timer",
-    "/dashboard/folders",
-    "/settings",
-  ];
 
   useEffect(() => {
     function onPointerDown(e: PointerEvent) {
@@ -79,22 +74,22 @@ export default function DashboardShell({
       },
       {
         label: "Task list",
-        href: "/tasklist",
+        href: "#",
         icon: <ListChecks size={18} strokeWidth={2} />,
       },
       {
         label: "Calendar",
-        href: "/calendar",
+        href: "#",
         icon: <Calendar size={18} strokeWidth={2} />,
       },
       {
         label: "Focus timer",
-        href: "/timer",
+        href: "#",
         icon: <Clock size={18} strokeWidth={2} />,
       },
       {
         label: "Folders",
-        href: "/dashboard/folders",
+        href: "#",
         icon: <Folder size={18} strokeWidth={2} />,
       },
     ],
@@ -188,21 +183,11 @@ export default function DashboardShell({
         </nav>
 
         <div className="mt-auto pt-8 space-y-2">
-          {/* Settings Link with Active Highlight */}
-          <Link
-            href="/settings"
-            className={cx(
-              "flex items-center gap-3 px-4 py-3 rounded-xl transition-colors select-none",
-              pathname === "/settings"
-                ? "bg-[#8B5CF6] text-white font-semibold"
-                : "text-[#151C27] hover:bg-white/60",
-            )}
+          <a
+            className="flex items-center gap-3 px-4 py-3 rounded-xl text-[#151C27] hover:bg-white/60"
+            href="#"
           >
-            <span
-              className={cx(
-                pathname === "/settings" ? "text-white" : "text-[#6B7280]",
-              )}
-            >
+            <span className="text-[#6B7280]">
               <Icon>
                 <Settings size={18} strokeWidth={2} />
               </Icon>
@@ -215,8 +200,7 @@ export default function DashboardShell({
             >
               Settings
             </span>
-          </Link>
-
+          </a>
           <a
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-[#151C27] hover:bg-white/60"
             href="#"
@@ -239,138 +223,137 @@ export default function DashboardShell({
       </aside>
 
       {/* Fixed top bar */}
-      {!excludedRoutes.includes(pathname) && (
-        <header
-          className={cx(
-            "fixed top-0 right-0 bg-white border-b border-[#E7E1F2] z-10",
-            headerLeft,
-          )}
-        >
-          <div className="flex items-center gap-4 px-6 py-4">
-            <div className="flex-1">
-              <div className="max-w-[560px]">
-                <div className="relative">
-                  <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#6B7280]">
-                    <Search size={18} strokeWidth={2} />
-                  </span>
-                  <input
-                    aria-label="Search"
-                    placeholder="Search tasks, notes or folders..."
-                    className="w-full h-10 rounded-full bg-[#ECE6F6] border border-[#E0D7EF] shadow-sm pl-11 pr-4 text-[14px] text-[#111827] placeholder:text-[#6B7280] placeholder:font-medium outline-none focus:ring-2 focus:ring-[#7C3AED]/30"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <button className="h-9 px-4 rounded-full bg-[#EAD9FF] text-[#7C3AED] font-semibold text-[13px] hover:opacity-95">
-                Upgrade
-              </button>
-
-              <button
-                aria-label="Notifications"
-                className="p-2 rounded-lg flex items-center justify-center text-[#111827] hover:opacity-80"
-              >
-                <Bell size={18} strokeWidth={2} />
-              </button>
-              <div ref={helpWrapRef} className="relative">
-                <button
-                  type="button"
-                  aria-label="Help"
-                  aria-haspopup="dialog"
-                  aria-expanded={helpOpen}
-                  onClick={() => setHelpOpen((v) => !v)}
-                  className={cx(
-                    "p-2 rounded-lg flex items-center justify-center transition-colors",
-                    helpOpen
-                      ? "text-[#7C3AED]"
-                      : "text-[#111827] hover:opacity-80",
-                  )}
-                >
-                  <HelpCircle size={18} strokeWidth={2} />
-                </button>
-
-                {helpOpen && (
-                  <div
-                    role="dialog"
-                    aria-label="Help"
-                    className="absolute right-0 mt-2 w-[260px] rounded-xl border border-[#E7E1F2] bg-white shadow-lg p-3 text-[13px] text-[#111827]"
-                  >
-                    <div className="font-semibold">Need help?</div>
-                    <div className="text-[#6B7280] mt-1">
-                      Email{" "}
-                      <a
-                        className="text-[#7C3AED] font-semibold hover:underline"
-                        href="mailto:taskpilot@yahoo.com"
-                      >
-                        taskpilot@yahoo.com
-                      </a>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div ref={userMenuRef} className="relative">
-                <button
-                  type="button"
-                  aria-label="User menu"
-                  aria-haspopup="menu"
-                  aria-expanded={userMenuOpen}
-                  onClick={() => setUserMenuOpen((v) => !v)}
-                  className="flex items-center gap-2 pl-2 border-l border-[#E7E1F2]"
-                >
-                  <div className="w-9 h-9 rounded-full bg-[#C084FC] border border-[#D9C8FF] flex items-center justify-center font-semibold text-[#151C27]">
-                    Z
-                  </div>
-                  <div className="text-[14px] text-[#9333EA] font-semibold">
-                    Zoe Hassan
-                  </div>
-                </button>
-
-                {userMenuOpen && (
-                  <div
-                    role="menu"
-                    aria-label="User menu"
-                    className="absolute right-0 mt-2 w-[200px] rounded-xl border border-[#E7E1F2] bg-white shadow-lg p-2 text-[13px] text-[#111827]"
-                  >
-                    <a
-                      role="menuitem"
-                      href="#"
-                      className="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-[#F3F4F6]"
-                    >
-                      <span className="text-[#6B7280]">
-                        <User size={16} strokeWidth={2} />
-                      </span>
-                      Profile
-                    </a>
-                    <Link
-                      role="menuitem"
-                      href="/settings"
-                      className="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-[#F3F4F6]"
-                    >
-                      <span className="text-[#6B7280]">
-                        <Settings size={16} strokeWidth={2} />
-                      </span>
-                      Settings
-                    </Link>
-                    <a
-                      role="menuitem"
-                      href="#"
-                      className="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-[#F3F4F6]"
-                    >
-                      <span className="text-[#6B7280]">
-                        <LogOut size={16} strokeWidth={2} />
-                      </span>
-                      Log out
-                    </a>
-                  </div>
-                )}
+      <header
+        className={cx(
+          "fixed top-0 right-0 bg-white border-b border-[#E7E1F2] z-10",
+          headerLeft,
+        )}
+      >
+        <div className="flex items-center gap-4 px-6 py-4">
+          <div className="flex-1">
+            <div className="max-w-[560px]">
+              <div className="relative">
+                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#6B7280]">
+                  <Search size={18} strokeWidth={2} />
+                </span>
+                <input
+                  aria-label="Search"
+                  placeholder="Search tasks, notes or folders..."
+                  className="w-full h-10 rounded-full bg-[#ECE6F6] border border-[#E0D7EF] shadow-sm pl-11 pr-4 text-[14px] text-[#111827] placeholder:text-[#6B7280] placeholder:font-medium outline-none focus:ring-2 focus:ring-[#7C3AED]/30"
+                />
               </div>
             </div>
           </div>
-        </header>
-      )}
-      {/* Scrollable page content */}
+
+          <div className="flex items-center gap-3">
+            <button className="h-9 px-4 rounded-full bg-[#EAD9FF] text-[#7C3AED] font-semibold text-[13px] hover:opacity-95">
+              Upgrade
+            </button>
+
+            <button
+              aria-label="Notifications"
+              className="p-2 rounded-lg flex items-center justify-center text-[#111827] hover:opacity-80"
+            >
+              <Bell size={18} strokeWidth={2} />
+            </button>
+            <div ref={helpWrapRef} className="relative">
+              <button
+                type="button"
+                aria-label="Help"
+                aria-haspopup="dialog"
+                aria-expanded={helpOpen}
+                onClick={() => setHelpOpen((v) => !v)}
+                className={cx(
+                  "p-2 rounded-lg flex items-center justify-center transition-colors",
+                  helpOpen
+                    ? "text-[#7C3AED]"
+                    : "text-[#111827] hover:opacity-80",
+                )}
+              >
+                <HelpCircle size={18} strokeWidth={2} />
+              </button>
+
+              {helpOpen && (
+                <div
+                  role="dialog"
+                  aria-label="Help"
+                  className="absolute right-0 mt-2 w-[260px] rounded-xl border border-[#E7E1F2] bg-white shadow-lg p-3 text-[13px] text-[#111827]"
+                >
+                  <div className="font-semibold">Need help?</div>
+                  <div className="text-[#6B7280] mt-1">
+                    Email{" "}
+                    <a
+                      className="text-[#7C3AED] font-semibold hover:underline"
+                      href="mailto:taskpilot@yahoo.com"
+                    >
+                      taskpilot@yahoo.com
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div ref={userMenuRef} className="relative">
+              <button
+                type="button"
+                aria-label="User menu"
+                aria-haspopup="menu"
+                aria-expanded={userMenuOpen}
+                onClick={() => setUserMenuOpen((v) => !v)}
+                className="flex items-center gap-2 pl-2 border-l border-[#E7E1F2]"
+              >
+                <div className="w-9 h-9 rounded-full bg-[#C084FC] border border-[#D9C8FF] flex items-center justify-center font-semibold text-[#151C27]">
+                  Z
+                </div>
+                <div className="text-[14px] text-[#9333EA] font-semibold">
+                  Zoe Hassan
+                </div>
+              </button>
+
+              {userMenuOpen && (
+                <div
+                  role="menu"
+                  aria-label="User menu"
+                  className="absolute right-0 mt-2 w-[200px] rounded-xl border border-[#E7E1F2] bg-white shadow-lg p-2 text-[13px] text-[#111827]"
+                >
+                  <a
+                    role="menuitem"
+                    href="#"
+                    className="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-[#F3F4F6]"
+                  >
+                    <span className="text-[#6B7280]">
+                      <User size={16} strokeWidth={2} />
+                    </span>
+                    Profile
+                  </a>
+                  <a
+                    role="menuitem"
+                    href="#"
+                    className="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-[#F3F4F6]"
+                  >
+                    <span className="text-[#6B7280]">
+                      <Settings size={16} strokeWidth={2} />
+                    </span>
+                    Settings
+                  </a>
+                  <a
+                    role="menuitem"
+                    href="#"
+                    className="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-[#F3F4F6]"
+                  >
+                    <span className="text-[#6B7280]">
+                      <LogOut size={16} strokeWidth={2} />
+                    </span>
+                    Log out
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Scrollable page content (sidebar/topbar stay fixed) */}
       <main className={cx("pt-[76px] px-10", contentLeft)}>{children}</main>
     </div>
   );
