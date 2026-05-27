@@ -38,9 +38,7 @@ export default function UpcomingCard() {
             </div>
             <div>
               <div className="text-[#151C27] font-semibold">{item.title}</div>
-              <div className="text-[#6B7280] text-[13px]">
-                {item.subtitle}
-              </div>
+              <div className="text-[#6B7280] text-[13px]">{item.subtitle}</div>
             </div>
           </div>
         ))}

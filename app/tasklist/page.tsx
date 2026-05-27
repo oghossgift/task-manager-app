@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import StudyGroupActivePill from "@/components/StudyGroupActivePill";
 import FilterChip from "./_components/FilterChip";
 import TaskListCard from "./_components/TaskListCard";
@@ -15,7 +15,8 @@ type Task = {
   description?: string;
   category: "Mathematics" | "History" | "Physics";
   priority: "High" | "Medium" | "Low";
-  dueLabel: string;
+  dueLabel?: string;
+  dueDate?: string;
   dueSoon?: boolean;
   files?: number;
   comments?: number;
@@ -51,6 +52,8 @@ const PRIORITY_STYLES: Record<Task["priority"], string> = {
   Low: "text-[#2563EB]",
 };
 
+const STORAGE_KEY = "taskpilot.tasks";
+
 const INITIAL_TASKS: Task[] = [
   {
     id: "history-essay",
@@ -83,24 +86,94 @@ const INITIAL_TASKS: Task[] = [
   },
 ];
 
+function formatDueLabel(dueDate: string) {
+  const date = new Date(dueDate);
+  if (Number.isNaN(date.getTime())) return "";
+  const now = new Date();
+  const startOfToday = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+  );
+  const startOfDue = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  );
+  const diffDays = Math.round(
+    (startOfDue.getTime() - startOfToday.getTime()) / (1000 * 60 * 60 * 24),
+  );
+
+  if (diffDays === 0) return "Due Today";
+  if (diffDays === 1) return "Due Tomorrow";
+
+  return `Due ${date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  })}`;
+}
+
+function isDueSoon(dueDate: string) {
+  const date = new Date(dueDate);
+  if (Number.isNaN(date.getTime())) return false;
+  const now = new Date();
+  const diff = date.getTime() - now.getTime();
+  return diff >= 0 && diff <= 48 * 60 * 60 * 1000;
+}
+
 export default function TaskListPage() {
   const [activeFilter, setActiveFilter] = useState<FilterKey>("All Tasks");
   const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
+  const [hasLoaded, setHasLoaded] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored) as Task[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setTasks(parsed);
+        }
+      } catch {
+        setTasks(INITIAL_TASKS);
+      }
+    }
+    setHasLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hasLoaded || typeof window === "undefined") return;
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  }, [tasks, hasLoaded]);
+
+  const displayTasks = useMemo(() => {
+    return tasks.map((task) => {
+      if (!task.dueDate) {
+        return task;
+      }
+      return {
+        ...task,
+        dueLabel: formatDueLabel(task.dueDate),
+        dueSoon: isDueSoon(task.dueDate),
+      };
+    });
+  }, [tasks]);
 
   const filteredTasks = useMemo(() => {
     switch (activeFilter) {
       case "Mathematics":
-        return tasks.filter((task) => task.category === "Mathematics");
+        return displayTasks.filter((task) => task.category === "Mathematics");
       case "History":
-        return tasks.filter((task) => task.category === "History");
+        return displayTasks.filter((task) => task.category === "History");
       case "High Priority":
-        return tasks.filter((task) => task.priority === "High");
+        return displayTasks.filter((task) => task.priority === "High");
       case "Next 48h":
-        return tasks.filter((task) => task.dueSoon);
+        return displayTasks.filter((task) => task.dueSoon);
       default:
-        return tasks;
+        return displayTasks;
     }
-  }, [activeFilter, tasks]);
+  }, [activeFilter, displayTasks]);
 
   const openTasks = filteredTasks.filter((task) => !task.completed);
   const completedTasks = filteredTasks.filter((task) => task.completed);
@@ -122,7 +195,15 @@ export default function TaskListPage() {
             Manage your academic journey with calm and focus
           </p>
         </div>
-        <StudyGroupActivePill extraCount={3} />
+        <div className="flex flex-wrap items-center gap-3">
+          <a
+            href="/tasklist/add"
+            className="inline-flex items-center justify-center rounded-full bg-[#7C3AED] text-white text-[13px] font-semibold px-5 py-2 hover:opacity-90"
+          >
+            + Add Task
+          </a>
+          <StudyGroupActivePill extraCount={3} />
+        </div>
       </div>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -176,7 +257,7 @@ export default function TaskListPage() {
                 onToggle={() => toggleTask(task.id)}
                 category={task.category}
                 priority={task.priority}
-                dueLabel={task.dueLabel}
+                dueLabel={task.dueLabel ?? ""}
                 title={task.title}
                 progressLabel={task.progressLabel ?? ""}
                 progressValue={task.progressValue}
@@ -190,7 +271,7 @@ export default function TaskListPage() {
                 onToggle={() => toggleTask(task.id)}
                 category={task.category}
                 priority={task.priority}
-                dueLabel={task.dueLabel}
+                dueLabel={task.dueLabel ?? ""}
                 title={task.title}
                 description={task.description ?? ""}
                 files={task.files ?? 0}
@@ -211,7 +292,7 @@ export default function TaskListPage() {
               onToggle={() => toggleTask(task.id)}
               category={task.category}
               priority={task.priority}
-              status={task.dueLabel}
+              status={task.dueLabel ?? ""}
               title={task.title}
             />
           ))}
